@@ -68,6 +68,9 @@ app.post("/check-balance",(req,res)=>{
    if (balance ){
     res.status(200).json({message:`you have ${balance} in your account`})
    }
+   else{
+    res.status(501).json({message:"something went wrong please try again later"});
+   }
 
 }); 
 
