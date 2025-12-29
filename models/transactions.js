@@ -19,6 +19,10 @@ const Transaction = sequelize.define('transaction',{
         type:DataTypes.FLOAT,
         allowNull:false,
         defaultValue:0.0    
-    }},);
+    },
+   
+    
+},);
+
 
     module.exports= Transaction;
