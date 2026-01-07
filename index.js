@@ -48,9 +48,19 @@ app.get('/check-server', (req, res) => {
 
 //signup API
 app.post("/register", async (req, res) => {
+
+  try{
   email = req.body.email;
   password = req.body.password;
   name = req.body.name;
+
+  if (!email || !password || !name) {
+    return res.status(400).json({ message: "Name, email and password are required" });
+  }
+  const existingUser = await User.findOne({ where: { email: email } });
+  if (existingUser) {
+    return res.status(409).json({ message: "User with this email already exists" });
+  }
 
   const register = await User.create({ name: name, email: email, password: password });
 
@@ -61,16 +71,20 @@ app.post("/register", async (req, res) => {
     if (wallet) {
       res.status(200).json({ message: "User Registered Successfully", register, wallet });
     } else {
-      res.status(500).json({ message: "error In Creating wallet" });
+      res.status(401).json({ message: "error In Creating wallet" });
 
     }
-  } else {
-    res.status(501).json({ message: "error In Registering User" });
+  } 
 
+  else {
+    res.status(500).json({ message: "Error in registration" });
   }
 
-})
-
+}catch (err) {
+  console.error(err);
+  res.status(500).json({ message: "Error in registration", error: err.message });
+}
+});
 //log In API
 
 app.post("/login", async (req, res) => {
