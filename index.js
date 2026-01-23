@@ -1,4 +1,4 @@
-express = require('express');
+const express = require('express');
 const authMiddleware = require('./middleware/authMiddleware')
 const jwt = require("jsonwebtoken")
 const depositRouter = require('./routes/deposite');
