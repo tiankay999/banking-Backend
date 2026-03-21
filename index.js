@@ -13,8 +13,10 @@ const transferRouter = require('./routes/transfer');
 const cors = require("cors");
 const dotenv = require('dotenv')
 const transporter = require("./config/nodemailer")
+const cookieParser = require("cookie-parser");
 
-const nodemailer = require("nodemailer");
+
+app.use(cookieParser());
 storeOTP = {};
 dotenv.config()
 
@@ -88,6 +90,7 @@ app.post("/register", async (req, res) => {
 //log In API
 
 app.post("/login", async (req, res) => {
+  try{
   email = req.body.email;
   password = req.body.password;
 
@@ -97,11 +100,25 @@ app.post("/login", async (req, res) => {
   if (login) {
 
     const token = jwt.sign({ id: login.id }, process.env.JWT_SECRET, { expiresIn: "1h" })
-    res.status(200).json({ message: "User LOgged In Successfully", token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 24*60*60*1000,
+    });
+    res.status(200).json({ message: "User LOgged In Successfully", user:{
+      id:login.id,
+      name:login.name,
+      email:login.email,
+    }});
   } else {
     res.status(401).json({ message: "Invalid Credentials" });
   }
 
+}catch(err){
+  console.error(err);
+  res.status(500).json({ message: "Error in login", error: err.message });
+}
 })
 
 
